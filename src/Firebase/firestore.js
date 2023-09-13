@@ -1,11 +1,20 @@
+import { getAuth } from "firebase/auth";
 import { db } from "./index";
-import { getDoc, doc, setDoc } from "firebase/firestore";
+import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 
 const defaultData = {
-  pastOrders: [],
-  activeOrders: [],
-  pastIssues: [],
-  activeIssues: [],
+  invoices: [],
+  totalAmountProcessed: 0,
+  companyName: "Invoice Suite",
+  lastWeekMetric: [
+    { day: "monday", amount: 1000 },
+    { day: "tuesday", amount: 1200 },
+    { day: "wednesday", amount: 800 },
+    { day: "thursday", amount: 400 },
+    { day: "friday", amount: 1900 },
+    { day: "saturday", amount: 1400 },
+    { day: "sunday", amount: 900 },
+  ],
 };
 
 const createDocumentOnUserSignUp = async (user) => {
@@ -23,5 +32,19 @@ const createDocumentOnUserSignUp = async (user) => {
     console.error("Error adding document: ", e);
   }
 };
+const updateCompanyName = async (newName) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
 
-export { createDocumentOnUserSignUp };
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+    await updateDoc(docRef, { ...docSnap.data(), companyName: newName })
+      .then(() => alert("Company Name Updated"))
+      .catch(() => alert("Something Went Wrong"));
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+};
+
+export { createDocumentOnUserSignUp, updateCompanyName };
