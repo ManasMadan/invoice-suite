@@ -1,13 +1,26 @@
 import { IonIcon } from "@ionic/react";
 import { logoTableau } from "ionicons/icons";
 import { useLocation } from "react-router";
-import { journal, analyticsOutline, documents, calendar } from "ionicons/icons";
+import {
+  journal,
+  analyticsOutline,
+  documents,
+  calendar,
+  settings,
+  logIn,
+  logOut,
+} from "ionicons/icons";
 import { Link } from "react-router-dom";
+import useUser from "../hooks/useUser";
+import { Avatar, Button } from "@nextui-org/react";
+import { signOut } from "../Firebase/auth";
+
 const links = [
   { icon: journal, title: "Dashboard", path: "/" },
   { icon: analyticsOutline, title: "Analytics", path: "/analytics" },
   { icon: documents, title: "Invoices", path: "/invoices" },
   { icon: calendar, title: "Calendar", path: "/calendar" },
+  { icon: settings, title: "Settings", path: "/settings" },
 ];
 
 const CustomLinkComponent = ({ link }) => {
@@ -28,10 +41,21 @@ const CustomLinkComponent = ({ link }) => {
     </Link>
   );
 };
+const LoginButton = () => {
+  return (
+    <Link to="/auth">
+      <div className="float-right bg-blue-900 flex w-fit gap-4 px-4 py-2 rounded-lg text-sm">
+        <IonIcon icon={logIn} size="small" />
+        Login
+      </div>
+    </Link>
+  );
+};
 
 export default function Navbar() {
+  const user = useUser();
   return (
-    <nav className="flex flex-col h-full border-r-3 rounded-2xl border-[#2d2e33] w-[250px] items-center justify-between py-12">
+    <nav className="flex flex-col h-full border-r-3 rounded-2xl border-[#2d2e33] min-w-[250px] items-center justify-between py-12">
       <div className="flex justify-center items-center gap-2">
         <IonIcon icon={logoTableau} size="large" />
         <h1 className="underline underline-offset-8 font-inconsolata text-xl uppercase font-medium tracking-wider">
@@ -40,10 +64,27 @@ export default function Navbar() {
       </div>
       <div className="flex flex-col gap-2 px-3 w-full">
         {links.map((link) => (
-          <CustomLinkComponent link={link} />
+          <CustomLinkComponent key={link.path} link={link} />
         ))}
       </div>
-      <div>Login</div>
+      <div className="w-full px-3 ">
+        {user ? (
+          <div className="flex justify-between items-center">
+            <Avatar src={user.photoURL} />
+
+            <Button
+              color="danger"
+              className="flex gap-4 px-4 py-2 rounded-lg text-sm"
+              onClick={signOut}
+            >
+              <IonIcon icon={logOut} size="small" />
+              Logout
+            </Button>
+          </div>
+        ) : (
+          <LoginButton />
+        )}
+      </div>
     </nav>
   );
 }

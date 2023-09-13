@@ -5,7 +5,7 @@ import {
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 
 /* Core CSS required for Ionic components to work properly */
@@ -33,10 +33,20 @@ import Analytics from "./pages/Analytics";
 import Invoices from "./pages/Invoices";
 import Calendar from "./pages/Calendar.jsx";
 import Navbar from "./components/Navbar";
+import { useEffect } from "react";
+import { initializeFirebase } from "./Firebase/index";
+import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
+import useUser from "./hooks/useUser";
 
 setupIonicReact();
 
 const App = () => {
+  const user = useUser();
+  useEffect(() => {
+    initializeFirebase();
+  }, []);
+
   return (
     <NextUIProvider>
       <IonApp className="dark">
@@ -73,6 +83,26 @@ const App = () => {
                   <Calendar />
                 </div>
               </IonContent>
+            </Route>
+            <Route path="/settings" exact={true}>
+              <IonContent>
+                <div className="w-full h-full flex">
+                  <Navbar />
+                  <Settings />
+                </div>
+              </IonContent>
+            </Route>
+            <Route path="/auth" exact={true}>
+              {user ? (
+                <Route render={() => <Redirect to="/" />} />
+              ) : (
+                <IonContent>
+                  <div className="w-full h-full flex">
+                    <Navbar />
+                    <Auth />
+                  </div>
+                </IonContent>
+              )}
             </Route>
             <Route>
               <IonContent>
