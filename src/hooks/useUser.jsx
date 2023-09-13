@@ -13,7 +13,6 @@ function useUser() {
       auth.onAuthStateChanged((user) => {
         if (user) {
           setUser(user);
-          console.log(user);
         } else {
           setUser(null);
         }

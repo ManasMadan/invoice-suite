@@ -38,8 +38,33 @@ import { initializeFirebase } from "./Firebase/index";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import useUser from "./hooks/useUser";
+import NewInvoice from "./pages/NewInvoice";
 
 setupIonicReact();
+
+const routes = [
+  { path: "/", components: [<Navbar />, <HomePage />] },
+  {
+    path: "/analytics",
+    components: [<Navbar />, <Analytics />],
+  },
+  {
+    path: "/invoices",
+    components: [<Navbar />, <Invoices />],
+  },
+  {
+    path: "/calendar",
+    components: [<Navbar />, <Calendar />],
+  },
+  {
+    path: "/settings",
+    components: [<Navbar />, <Settings />],
+  },
+  {
+    path: "/invoices/new",
+    components: [<Navbar />, <NewInvoice />],
+  },
+];
 
 const App = () => {
   const user = useUser();
@@ -52,53 +77,25 @@ const App = () => {
       <IonApp className="dark">
         <IonReactRouter>
           <IonRouterOutlet id="main">
-            <Route path="/" exact={true}>
-              <IonContent>
-                <div className="w-full h-full flex">
-                  <Navbar />
-                  <HomePage />
-                </div>
-              </IonContent>
-            </Route>
-            <Route path="/analytics" exact={true}>
-              <IonContent>
-                <div className="w-full h-full flex">
-                  <Navbar />
-                  <Analytics />
-                </div>
-              </IonContent>
-            </Route>
-            <Route path="/invoices" exact={true}>
-              <IonContent>
-                <div className="w-full h-full flex">
-                  <Navbar />
-                  <Invoices />
-                </div>
-              </IonContent>
-            </Route>
-            <Route path="/calendar" exact={true}>
-              <IonContent>
-                <div className="w-full h-full flex">
-                  <Navbar />
-                  <Calendar />
-                </div>
-              </IonContent>
-            </Route>
-            <Route path="/settings" exact={true}>
-              <IonContent>
-                <div className="w-full h-full flex">
-                  <Navbar />
-                  <Settings />
-                </div>
-              </IonContent>
-            </Route>
+            {routes.map((route) => (
+              <Route path={route.path} exact={true}>
+                {!user ? (
+                  <Route render={() => <Redirect to="/auth" />} />
+                ) : (
+                  <IonContent>
+                    <div className="w-full h-full flex">
+                      {...route.components}
+                    </div>
+                  </IonContent>
+                )}
+              </Route>
+            ))}
             <Route path="/auth" exact={true}>
               {user ? (
                 <Route render={() => <Redirect to="/" />} />
               ) : (
                 <IonContent>
                   <div className="w-full h-full flex">
-                    <Navbar />
                     <Auth />
                   </div>
                 </IonContent>

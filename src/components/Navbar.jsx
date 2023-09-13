@@ -57,7 +57,8 @@ export default function Navbar() {
   return (
     <nav className="flex flex-col h-full border-r-3 rounded-2xl border-[#2d2e33] min-w-[250px] items-center justify-between py-12">
       <div className="flex justify-center items-center gap-2">
-        <IonIcon icon={logoTableau} size="large" />
+        <img src="/favicon.png" width="40px" />
+
         <h1 className="underline underline-offset-8 font-inconsolata text-xl uppercase font-medium tracking-wider">
           Invoice Generator
         </h1>

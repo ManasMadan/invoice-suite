@@ -4,6 +4,7 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { createDocumentOnUserSignUp } from "./firestore.js";
 
@@ -47,9 +48,21 @@ const signUpWithEmail = async (email, password, callbackUserExist) => {
     });
   return null;
 };
+const sendForgotPasswordLink = async (email) => {
+  const auth = getAuth();
+  await sendPasswordResetEmail(auth, email)
+    .then(() => alert("Password Reset Link Sent to " + email))
+    .catch((err) => console.log(err));
+};
 const signOut = async () => {
   const auth = getAuth();
   await auth.signOut();
 };
 
-export { signInWithGoogle, signInWithEmail, signUpWithEmail, signOut };
+export {
+  signInWithGoogle,
+  signInWithEmail,
+  signUpWithEmail,
+  signOut,
+  sendForgotPasswordLink,
+};

@@ -7,9 +7,16 @@ import {
   Button,
   Card,
   CardBody,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@nextui-org/react";
 import { Divider } from "@nextui-org/react";
 import {
+  sendForgotPasswordLink,
   signInWithEmail,
   signInWithGoogle,
   signUpWithEmail,
@@ -721,9 +728,14 @@ export default function App() {
     password: "",
     visible: false,
   });
+  const [forgotPasswordDetails, setForgotPasswordDetails] = useState({
+    email: "",
+  });
   const callbackUserExist = () => {
     alert("User Exists Please Sign In Instead");
   };
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   return (
     <main className="flex flex-row-reverse justify-evenly w-full items-center flex-wrap">
       <div>
@@ -731,7 +743,7 @@ export default function App() {
       </div>
       <div className="flex flex-col justify-center items-center pb-12">
         <div className="flex flex-col w-full">
-          <Card className="max-w-full w-[340px] h-[365px]">
+          <Card className="max-w-full w-[340px] h-[400px]">
             <CardBody className="overflow-hidden">
               <Tabs
                 fullWidth
@@ -803,6 +815,12 @@ export default function App() {
                       >
                         Login
                       </Button>
+                    </div>
+                    <div
+                      className="text-sm text-center text-[#72767f]"
+                      onClick={onOpen}
+                    >
+                      Forgot Password
                     </div>
                   </form>
                 </Tab>
@@ -887,6 +905,49 @@ export default function App() {
           Sign In With Google Instead
         </Button>
       </div>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className="dark text-white"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Forgot Password
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  value={forgotPasswordDetails.email}
+                  onChange={(e) =>
+                    setForgotPasswordDetails((prev) => {
+                      return { ...prev, email: e.target.value };
+                    })
+                  }
+                  isRequired
+                  label="Email"
+                  placeholder="Enter your email"
+                  type="email"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={async () => {
+                    await sendForgotPasswordLink(forgotPasswordDetails.email);
+                    onClose();
+                  }}
+                >
+                  Send Reset Link
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </main>
   );
 }
