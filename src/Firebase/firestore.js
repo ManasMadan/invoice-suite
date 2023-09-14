@@ -46,5 +46,33 @@ const updateCompanyName = async (newName) => {
     console.error("Error adding document: ", e);
   }
 };
+const createInvoice = async (
+  invoiceDetails,
+  senderAddress,
+  clientsAddress,
+  items
+) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const newInvoice = {
+    ...invoiceDetails,
+    senderAddress: senderAddress,
+    clientsAddress: clientsAddress,
+    items: items,
+  };
 
-export { createDocumentOnUserSignUp, updateCompanyName };
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+    const docData = docSnap.data();
+    await updateDoc(docRef, {
+      ...docData,
+      invoices: [...docData.invoices, newInvoice],
+    })
+      .then(() => alert("Invoice Created"))
+      .catch(() => alert("Something Went Wrong"));
+  } catch (e) {
+    console.error("Something Went Wrong: ", e);
+  }
+};
+export { createDocumentOnUserSignUp, updateCompanyName, createInvoice };

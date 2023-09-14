@@ -7,12 +7,12 @@ export default function Settings() {
   return (
     <div className="px-6 py-12 w-full">
       <h1 className="text-2xl font-bold">Settings</h1>
-      <div className="mt-12 max-w-md flex items-end gap-8">
+      <div className="mt-12 max-w-md flex items-center gap-8 justify-center">
         <Input
-          variant="faded"
+          className="w-full bg-[#37373f] rounded-xl"
+          variant="bordered"
           type="text"
           label="Company Name"
-          labelPlacement="outside"
           placeholder="ex. Invoice Suite"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}

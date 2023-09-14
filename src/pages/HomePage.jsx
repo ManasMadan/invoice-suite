@@ -13,7 +13,7 @@ import {
   PieChart,
   Pie,
 } from "recharts";
-import { walletOutline } from "ionicons/icons";
+import { walletOutline, refreshOutline } from "ionicons/icons";
 import useData from "../hooks/useData";
 import { useEffect, useState } from "react";
 
@@ -64,7 +64,8 @@ const PieChartComponent = ({ pdata }) => (
 );
 
 const HomePage = () => {
-  const data = useData();
+  const [refresh, setRefresh] = useState(0);
+  const data = useData(refresh);
   const [total, setTotal] = useState(0);
   useEffect(() => {
     if (!data) return;
@@ -78,7 +79,10 @@ const HomePage = () => {
   return (
     <div className="font-inconsolata w-full py-12 px-6 mr-6">
       <div className="flex justify-between">
-        <h1 className="text-2xl font-bold pt-1">Weekly Insights</h1>
+        <h1 className="text-2xl font-bold gap-2 flex items-center">
+          Weekly Insights
+          <IonIcon icon={refreshOutline} onClick={() => setRefresh(!refresh)} />
+        </h1>
         <Button color="primary" className="text-xl">
           <Link to="/invoices/new" className="flex items-center gap-2">
             <IonIcon icon={addCircle} />
@@ -90,7 +94,7 @@ const HomePage = () => {
         <div className="flex flex-wrap gap-6">
           <div className="w-[40%] max-w-[350px] aspect-square bg-[#a6abff] p-4 rounded-xl text-black">
             <div className="flex flex-col">
-              <div class="text-xl font-bold flex items-center gap-4">
+              <div className="text-xl font-bold flex items-center gap-4">
                 <IonIcon
                   className="bg-white p-1 rounded-md"
                   icon={walletOutline}
@@ -100,7 +104,7 @@ const HomePage = () => {
               <div>
                 <img src="/images/homepage_image.svg" />
               </div>
-              <div class="text-4xl font-bold">${total}</div>
+              <div className="text-4xl font-bold">${total}</div>
             </div>
           </div>
           <div className="w-[40%] max-w-[350px] aspect-square bg-[#37373f] p-4 rounded-xl">
