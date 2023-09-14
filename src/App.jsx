@@ -38,6 +38,8 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import useUser from "./hooks/useUser";
 import NewInvoice from "./pages/NewInvoice";
+import ViewInvoice from "./pages/ViewInvoice";
+import UpdateInvoice from "./pages/UpdateInvoice";
 
 setupIonicReact();
 
@@ -58,6 +60,14 @@ const routes = [
   {
     path: "/invoices/new",
     components: [<Navbar />, <NewInvoice />],
+  },
+  {
+    path: "/invoices/:uid",
+    components: [<Navbar />, <ViewInvoice />],
+  },
+  {
+    path: "/invoices/update/:uid",
+    components: [<Navbar />, <UpdateInvoice />],
   },
 ];
 

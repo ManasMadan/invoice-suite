@@ -8,13 +8,13 @@ const defaultData = {
   companyName: "Invoice Suite",
   currencySymbol: "₹",
   lastWeekMetric: [
-    { day: "Monday", amount: 0 },
-    { day: "Tuesday", amount: 0 },
-    { day: "Wednesday", amount: 0 },
-    { day: "Thursday", amount: 0 },
-    { day: "Friday", amount: 0 },
-    { day: "Saturday", amount: 0 },
-    { day: "Sunday", amount: 0 },
+    { day: "Monday", amount: 1200 },
+    { day: "Tuesday", amount: 1800 },
+    { day: "Wednesday", amount: 1000 },
+    { day: "Thursday", amount: 1900 },
+    { day: "Friday", amount: 2200 },
+    { day: "Saturday", amount: 2300 },
+    { day: "Sunday", amount: 1500 },
   ],
   totalAmountProcessed: 0,
 };
@@ -98,6 +98,40 @@ const createInvoice = async (
     console.error("Something Went Wrong: ", e);
   }
 };
+const updateInvoice = async (
+  uid,
+  invoiceDetails,
+  senderAddress,
+  clientsAddress,
+  items
+) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+    const docData = docSnap.data();
+    let i = 0;
+    let invoice = docData.invoices.filter((item, index) => {
+      if (item.uid === uid) i = index;
+      return item.uid === uid;
+    })[0];
+    invoice = {
+      ...invoiceDetails,
+      clientsAddress: clientsAddress,
+      senderAddress: senderAddress,
+      items: items,
+    };
+    docData.invoices[i] = invoice;
+    await updateDoc(docRef, docData)
+      .then(() => alert("Invoice Updated"))
+      .catch(() => alert("Something Went Wrong"));
+  } catch (e) {
+    console.error("Something Went Wrong: ", e);
+  }
+};
+
 const deleteInvoice = async (uid, refreshData) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -106,10 +140,17 @@ const deleteInvoice = async (uid, refreshData) => {
     const docRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(docRef);
     const docData = docSnap.data();
-    const updatedData = docData;
-    updatedData.invoices = updatedData.invoices.filter(
-      (item) => item.uid !== uid
-    );
+    const totalAmount = docData.totalAmountProcessed;
+    let invoiceAmount = 0;
+    const updatedData = { ...docData };
+    updatedData.invoices = updatedData.invoices.filter((item) => {
+      if (item.uid === uid) {
+        invoiceAmount = item.invoiceTotal;
+      }
+      return item.uid !== uid;
+    });
+
+    updatedData.totalAmountProcessed = totalAmount - invoiceAmount;
 
     await updateDoc(docRef, updatedData)
       .then(() => {
@@ -128,4 +169,5 @@ export {
   createInvoice,
   updateCurrencySymbol,
   deleteInvoice,
+  updateInvoice,
 };

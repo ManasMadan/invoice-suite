@@ -12,10 +12,12 @@ import {
   Tooltip,
   PieChart,
   Pie,
+  BarChart,
+  Bar,
 } from "recharts";
 import { walletOutline, refreshOutline } from "ionicons/icons";
 import useData from "../hooks/useData";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const LineChartComponent = ({ pdata }) => (
   <div className="w-full">
@@ -47,18 +49,11 @@ const LineChartComponent = ({ pdata }) => (
 const PieChartComponent = ({ pdata }) => (
   <div className="w-full h-full">
     <ResponsiveContainer width="100%" height="100%">
-      <PieChart width={300} height={300}>
-        <Pie
-          data={pdata}
-          dataKey="amount"
-          cx="50%"
-          cy="50%"
-          innerRadius={0}
-          outerRadius={120}
-          fill="#aca6ff"
-          label
-        />
-      </PieChart>
+      <BarChart width={150} height={40} data={pdata}>
+        <Bar dataKey="amount" fill="#8884d8" />
+        <XAxis dataKey="day" interval={"preserveStartEnd"} />
+        <YAxis dataKey="amount" />
+      </BarChart>
     </ResponsiveContainer>
   </div>
 );
@@ -82,26 +77,28 @@ const HomePage = () => {
         </Button>
       </div>
       <div className="flex gap-6 flex-col mt-12">
-        <div className="flex flex-wrap gap-6">
-          <div className="w-[40%] max-w-[350px] aspect-square bg-[#a6abff] p-4 rounded-xl text-black">
-            <div className="flex flex-col">
-              <div className="text-xl font-bold flex items-center gap-4">
-                <IonIcon
-                  className="bg-white p-1 rounded-md"
-                  icon={walletOutline}
-                />
-                <div>Amount Processed</div>
-              </div>
-              <div>
-                <img src="/images/homepage_image.svg" />
-              </div>
-              <div className="text-4xl font-bold">
-                ${data?.totalAmountProcessed}
+        <div className="flex flex-col gap-6">
+          <div className="flex gap-6 flex-nowrap w-full">
+            <div className="w-[40%] max-w-[350px] h-[350px] bg-[#a6abff] p-4 rounded-xl text-black">
+              <div className="flex flex-col">
+                <div className="text-xl font-bold flex items-center gap-4">
+                  <IonIcon
+                    className="bg-white p-1 rounded-md"
+                    icon={walletOutline}
+                  />
+                  <div>Amount Processed</div>
+                </div>
+                <div>
+                  <img src="/images/homepage_image.svg" />
+                </div>
+                <div className="text-4xl font-bold">
+                  ${data?.totalAmountProcessed}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="w-[40%] max-w-[350px] aspect-square bg-[#37373f] p-4 rounded-xl">
-            {data ? <PieChartComponent pdata={data.lastWeekMetric} /> : null}
+            <div className="w-full h-[350px] bg-[#37373f] p-4 rounded-xl">
+              {data ? <PieChartComponent pdata={data.lastWeekMetric} /> : null}
+            </div>
           </div>
           <div className="w-full bg-[#37373f] p-4 rounded-xl mb-12">
             {data ? <LineChartComponent pdata={data.lastWeekMetric} /> : null}

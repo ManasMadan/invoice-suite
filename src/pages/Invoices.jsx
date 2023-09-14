@@ -15,6 +15,10 @@ import { DeleteIcon } from "../icons/DeleteIcon";
 import { EyeIcon } from "../icons/EyeIcon";
 import useData from "../hooks/useData";
 import { deleteInvoice } from "../Firebase/firestore";
+import { Link } from "react-router-dom";
+import { IonIcon } from "@ionic/react";
+import { mailOutline } from "ionicons/icons";
+import emailjs from "@emailjs/browser";
 
 const columns = [
   { name: "Title", uid: "invoiceTitle" },
@@ -29,6 +33,53 @@ const statusColorMap = {
   draft: "danger",
   pending: "warning",
 };
+
+function itemStr(item, currencySymbol) {
+  return `<tr style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;"valign="top"><td style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;text-decoration:none;vertical-align:top;border-width:1px;padding:0.5em;position:relative;text-align:left;border-radius:0.25em;border-style:solid;border-color:#ddd;width:26%;"width="26%"valign="top"align="left"><span style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${item.name}</span></td><td style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;text-decoration:none;vertical-align:top;border-width:1px;padding:0.5em;position:relative;text-align:left;border-radius:0.25em;border-style:solid;border-color:#ddd;width:38%;"width="38%"valign="top"align="left"><span style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${item.quantity}</span></td><td style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;text-decoration:none;vertical-align:top;border-width:1px;padding:0.5em;position:relative;border-radius:0.25em;border-style:solid;border-color:#ddd;text-align:right;width:12%;"width="12%"valign="top"align="right"><span data-prefix=""style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${currencySymbol}</span><span style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${item.price}</span></td><td style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;text-decoration:none;vertical-align:top;border-width:1px;padding:0.5em;position:relative;border-radius:0.25em;border-style:solid;border-color:#ddd;text-align:right;width:12%;"width="12%"valign="top"align="right"><span data-prefix=""style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${currencySymbol}</span><span style="border:0;box-sizing:content-box;color:inherit;font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;line-height:inherit;list-style:none;margin:0;padding:0;text-decoration:none;vertical-align:top;">${item.price}</span></td></tr>`;
+}
+
+function getTableRowsHTML(items, currencySymbol) {
+  let str = "";
+  items.forEach((item) => {
+    str = str.concat(itemStr(item, currencySymbol));
+    str = str.concat("<br>");
+  });
+  return str;
+}
+
+function sendEmailToClient(invoice, currencySymbol) {
+  let yourDate = new Date(invoice.createdAt.seconds * 1000);
+  yourDate = yourDate.toISOString().split("T")[0];
+  emailjs
+    .send(
+      "service_ybnmn0v",
+      "template_wsyy3xr",
+      {
+        ...invoice,
+        clientStreet: invoice.clientsAddress.street,
+        clientCity: invoice.clientsAddress.city,
+        clientPostCode: invoice.clientsAddress.postcode,
+        clientCountry: invoice.clientsAddress.country,
+        senderStreet: invoice.senderAddress.street,
+        senderCity: invoice.senderAddress.city,
+        senderPostCode: invoice.senderAddress.postcode,
+        senderCountry: invoice.senderAddress.country,
+        tableRowsHTML: getTableRowsHTML(invoice.items, "₹"),
+        currencySymbol: currencySymbol,
+        createdAtDate: yourDate,
+        from_name: `${invoice.senderName} ${invoice.senderEmail}`,
+      },
+      "jfboO5uLvrXJSVWvS"
+    )
+    .then(
+      (result) => {
+        console.log(result.text);
+      },
+      (error) => {
+        console.log(error.text);
+      }
+    );
+}
 
 export default function Invoices() {
   const [refresh, setRefresh] = React.useState(1);
@@ -77,14 +128,26 @@ export default function Invoices() {
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="See Invoice">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EyeIcon />
+              <Link to={`/invoices/${invoice.uid}`}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Link>
+            </Tooltip>
+            <Tooltip content="Mail Invoice">
+              <span
+                onClick={() => sendEmailToClient(invoice, data.currencySymbol)}
+                className="h-5 text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
+                <IonIcon icon={mailOutline} />
               </span>
             </Tooltip>
             <Tooltip content="Edit Invoice">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <EditIcon />
-              </span>
+              <Link to={`/invoices/update/${invoice.uid}`}>
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Link>
             </Tooltip>
             <Tooltip color="danger" content="Delete Invoice">
               <span
