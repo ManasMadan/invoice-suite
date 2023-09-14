@@ -29,7 +29,6 @@ import "./theme/variables.css";
 import "./App.css";
 
 import { NextUIProvider } from "@nextui-org/react";
-import Analytics from "./pages/Analytics";
 import Invoices from "./pages/Invoices";
 import Calendar from "./pages/Calendar.jsx";
 import Navbar from "./components/Navbar";
@@ -74,7 +73,7 @@ const App = () => {
         <IonReactRouter>
           <IonRouterOutlet id="main">
             {routes.map((route) => (
-              <Route path={route.path} exact={true}>
+              <Route key={route.path} path={route.path} exact={true}>
                 {!user ? (
                   <Route render={() => <Redirect to="/auth" />} />
                 ) : (

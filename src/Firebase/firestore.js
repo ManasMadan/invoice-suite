@@ -1,6 +1,7 @@
 import { getAuth } from "firebase/auth";
 import { db } from "./index";
 import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import { uid } from "uid";
 
 const defaultData = {
   invoices: [],
@@ -73,6 +74,7 @@ const createInvoice = async (
   yourDate.toISOString().split("T")[0];
 
   const newInvoice = {
+    uid: uid(),
     ...invoiceDetails,
     senderAddress: senderAddress,
     clientsAddress: clientsAddress,
@@ -96,10 +98,34 @@ const createInvoice = async (
     console.error("Something Went Wrong: ", e);
   }
 };
+const deleteInvoice = async (uid, refreshData) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+    const docData = docSnap.data();
+    const updatedData = docData;
+    updatedData.invoices = updatedData.invoices.filter(
+      (item) => item.uid !== uid
+    );
+
+    await updateDoc(docRef, updatedData)
+      .then(() => {
+        alert("Invoice Deleted");
+        refreshData();
+      })
+      .catch(() => alert("Something Went Wrong"));
+  } catch (e) {
+    console.error("Something Went Wrong: ", e);
+  }
+};
 
 export {
   createDocumentOnUserSignUp,
   updateCompanyName,
   createInvoice,
   updateCurrencySymbol,
+  deleteInvoice,
 };

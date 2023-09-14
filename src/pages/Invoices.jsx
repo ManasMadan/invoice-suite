@@ -14,6 +14,7 @@ import { EditIcon } from "../icons/EditIcon";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { EyeIcon } from "../icons/EyeIcon";
 import useData from "../hooks/useData";
+import { deleteInvoice } from "../Firebase/firestore";
 
 const columns = [
   { name: "Title", uid: "invoiceTitle" },
@@ -30,7 +31,8 @@ const statusColorMap = {
 };
 
 export default function Invoices() {
-  const data = useData();
+  const [refresh, setRefresh] = React.useState(1);
+  const data = useData(refresh);
 
   const [page, setPage] = React.useState(1);
   const [invoices, setInvoices] = React.useState([]);
@@ -43,26 +45,28 @@ export default function Invoices() {
     return invoices.slice(start, end);
   }, [page, invoices]);
   useEffect(() => {
-    setInvoices(data?.invoices || []);
+    setInvoices(data?.invoices.reverse() || []);
   }, [data]);
+  const refreshData = () =>
+    setRefresh((prev) => {
+      return !prev;
+    });
 
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
-
+  const renderCell = React.useCallback((invoice, columnKey) => {
+    const cellValue = invoice[columnKey];
+    let yourDate;
+    if (columnKey == "createdAt") {
+      yourDate = new Date(cellValue.seconds * 1000);
+      yourDate = yourDate.toISOString().split("T")[0];
+    }
     switch (columnKey) {
-      case "invoiceTitle":
-        return cellValue;
       case "createdAt":
-        return <div>Created At</div>;
-      case "clientName":
-        return <div>Client Name</div>;
-      case "invoiceTotal":
-        return <div>Invoice Amount</div>;
+        return yourDate;
       case "status":
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[user.status]}
+            color={statusColorMap[invoice.status]}
             size="sm"
             variant="flat"
           >
@@ -83,7 +87,10 @@ export default function Invoices() {
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete Invoice">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <span
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+                onClick={() => deleteInvoice(invoice.uid, refreshData)}
+              >
                 <DeleteIcon />
               </span>
             </Tooltip>
@@ -129,7 +136,7 @@ export default function Invoices() {
         </TableHeader>
         <TableBody items={items}>
           {(item) => (
-            <TableRow key={JSON.stringify(item)}>
+            <TableRow key={`${Math.random()}`}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
               )}

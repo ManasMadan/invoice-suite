@@ -11,9 +11,7 @@ export default function Calendar() {
       dateInput = document.querySelector(".date-input"),
       eventDay = document.querySelector(".event-day"),
       eventDate = document.querySelector(".event-date"),
-      eventsContainer = document.querySelector(".events"),
-      addEventBtn = document.querySelector(".add-event"),
-      addEventWrapper = document.querySelector(".add-event-wrapper ");
+      eventsContainer = document.querySelector(".events");
 
     let today = new Date();
     let activeDay;
@@ -238,12 +236,6 @@ export default function Calendar() {
       eventDay.innerHTML = dayName;
       eventDate.innerHTML = date + " " + months[month] + " " + year;
     }
-
-    document.addEventListener("click", (e) => {
-      if (e.target !== addEventBtn && !addEventWrapper.contains(e.target)) {
-        addEventWrapper.classList.remove("active");
-      }
-    });
 
     function defineProperty() {
       var osccred = document.createElement("div");
