@@ -69,11 +69,15 @@ const createInvoice = async (
 ) => {
   const auth = getAuth();
   const user = auth.currentUser;
+  let yourDate = new Date();
+  yourDate.toISOString().split("T")[0];
+
   const newInvoice = {
     ...invoiceDetails,
     senderAddress: senderAddress,
     clientsAddress: clientsAddress,
     items: items,
+    createdAt: yourDate,
   };
 
   try {
