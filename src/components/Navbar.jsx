@@ -1,9 +1,7 @@
 import { IonIcon } from "@ionic/react";
-import { logoTableau } from "ionicons/icons";
 import { useLocation } from "react-router";
 import {
   journal,
-  analyticsOutline,
   documents,
   calendar,
   settings,
@@ -17,7 +15,6 @@ import { signOut } from "../Firebase/auth";
 
 const links = [
   { icon: journal, title: "Dashboard", path: "/" },
-  { icon: analyticsOutline, title: "Analytics", path: "/analytics" },
   { icon: documents, title: "Invoices", path: "/invoices" },
   { icon: calendar, title: "Calendar", path: "/calendar" },
   { icon: settings, title: "Settings", path: "/settings" },
@@ -59,8 +56,8 @@ export default function Navbar() {
       <div className="flex justify-center items-center gap-2">
         <img src="/favicon.png" width="40px" />
 
-        <h1 className="underline underline-offset-8 font-inconsolata text-xl uppercase font-medium tracking-wider">
-          Invoice Generator
+        <h1 className="underline underline-offset-4 font-inconsolata text-xl uppercase font-medium tracking-wider">
+          Invoice Suite
         </h1>
       </div>
       <div className="flex flex-col gap-2 px-3 w-full">

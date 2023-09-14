@@ -3,6 +3,7 @@ import { Divider, Input, Radio, RadioGroup } from "@nextui-org/react";
 import { IonIcon } from "@ionic/react";
 import { addCircleOutline, arrowForwardCircleOutline } from "ionicons/icons";
 import { createInvoice } from "../Firebase/firestore";
+import useData from "../hooks/useData";
 const defaultItem = {
   name: "",
   quantity: 0,
@@ -11,6 +12,7 @@ const defaultItem = {
 };
 
 export default function NewInvoice() {
+  const data = useData();
   const [senderAddress, setSenderAddress] = useState({
     street: "",
     city: "",
@@ -310,7 +312,7 @@ export default function NewInvoice() {
                 className="w-full rounded-xl"
                 variant="faded"
                 isRequired
-                label="Price"
+                label={`Price (${data?.currencySymbol})`}
                 type="number"
                 onChange={(e) => {
                   const prevElement = item;
@@ -325,7 +327,7 @@ export default function NewInvoice() {
                 variant="faded"
                 isRequired
                 readOnly={true}
-                label="Total"
+                label={`Total (${data?.currencySymbol})`}
                 labelPlacement="inside"
                 placeholder="Total = Price * Quantity"
                 type="text"
@@ -334,7 +336,7 @@ export default function NewInvoice() {
             </div>
           ))}
           <h2 className="text-end text-xl font-bold">
-            Billing Amount ({invoiceDetails.invoiceTotal})
+            Billing Amount {data?.currencySymbol} {invoiceDetails.invoiceTotal}
           </h2>
         </div>
         <div className="mt-4 add-items-btn flex justify-center items-center cursor-pointer">

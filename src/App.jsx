@@ -45,10 +45,6 @@ setupIonicReact();
 const routes = [
   { path: "/", components: [<Navbar />, <HomePage />] },
   {
-    path: "/analytics",
-    components: [<Navbar />, <Analytics />],
-  },
-  {
     path: "/invoices",
     components: [<Navbar />, <Invoices />],
   },

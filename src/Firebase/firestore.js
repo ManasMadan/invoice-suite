@@ -5,6 +5,7 @@ import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 const defaultData = {
   invoices: [],
   companyName: "Invoice Suite",
+  currencySymbol: "₹",
   lastWeekMetric: [
     { day: "monday", amount: 1000 },
     { day: "tuesday", amount: 1200 },
@@ -45,6 +46,20 @@ const updateCompanyName = async (newName) => {
     console.error("Error adding document: ", e);
   }
 };
+const updateCurrencySymbol = async (newName) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  try {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+    await updateDoc(docRef, { ...docSnap.data(), currencySymbol: newName })
+      .then(() => alert("Currency Symbol Updated"))
+      .catch(() => alert("Something Went Wrong"));
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+};
 const createInvoice = async (
   invoiceDetails,
   senderAddress,
@@ -74,4 +89,9 @@ const createInvoice = async (
     console.error("Something Went Wrong: ", e);
   }
 };
-export { createDocumentOnUserSignUp, updateCompanyName, createInvoice };
+export {
+  createDocumentOnUserSignUp,
+  updateCompanyName,
+  createInvoice,
+  updateCurrencySymbol,
+};
