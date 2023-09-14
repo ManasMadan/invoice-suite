@@ -7,14 +7,15 @@ const defaultData = {
   companyName: "Invoice Suite",
   currencySymbol: "₹",
   lastWeekMetric: [
-    { day: "monday", amount: 1000 },
-    { day: "tuesday", amount: 1200 },
-    { day: "wednesday", amount: 800 },
-    { day: "thursday", amount: 400 },
-    { day: "friday", amount: 1900 },
-    { day: "saturday", amount: 1400 },
-    { day: "sunday", amount: 900 },
+    { day: "Monday", amount: 0 },
+    { day: "Tuesday", amount: 0 },
+    { day: "Wednesday", amount: 0 },
+    { day: "Thursday", amount: 0 },
+    { day: "Friday", amount: 0 },
+    { day: "Saturday", amount: 0 },
+    { day: "Sunday", amount: 0 },
   ],
+  totalAmountProcessed: 0,
 };
 
 const createDocumentOnUserSignUp = async (user) => {
@@ -81,6 +82,8 @@ const createInvoice = async (
     const docData = docSnap.data();
     await updateDoc(docRef, {
       ...docData,
+      totalAmountProcessed:
+        newInvoice.invoiceTotal + docData.totalAmountProcessed,
       invoices: [...docData.invoices, newInvoice],
     })
       .then(() => alert("Invoice Created"))
@@ -89,6 +92,7 @@ const createInvoice = async (
     console.error("Something Went Wrong: ", e);
   }
 };
+
 export {
   createDocumentOnUserSignUp,
   updateCompanyName,

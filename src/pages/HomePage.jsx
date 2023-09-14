@@ -66,15 +66,6 @@ const PieChartComponent = ({ pdata }) => (
 const HomePage = () => {
   const [refresh, setRefresh] = useState(0);
   const data = useData(refresh);
-  const [total, setTotal] = useState(0);
-  useEffect(() => {
-    if (!data) return;
-    let sum = 0;
-    data.lastWeekMetric.forEach((element) => {
-      sum += element.amount;
-    });
-    setTotal(sum);
-  }, [data]);
 
   return (
     <div className="font-inconsolata w-full py-12 px-6 mr-6">
@@ -104,7 +95,9 @@ const HomePage = () => {
               <div>
                 <img src="/images/homepage_image.svg" />
               </div>
-              <div className="text-4xl font-bold">${total}</div>
+              <div className="text-4xl font-bold">
+                ${data?.totalAmountProcessed}
+              </div>
             </div>
           </div>
           <div className="w-[40%] max-w-[350px] aspect-square bg-[#37373f] p-4 rounded-xl">
