@@ -4,7 +4,6 @@ import { getDoc, doc, setDoc, updateDoc } from "firebase/firestore";
 
 const defaultData = {
   invoices: [],
-  totalAmountProcessed: 0,
   companyName: "Invoice Suite",
   lastWeekMetric: [
     { day: "monday", amount: 1000 },
