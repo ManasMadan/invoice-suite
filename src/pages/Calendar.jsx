@@ -1,7 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import useData from "../hooks/useData";
 
 export default function Calendar() {
+  const data = useData();
+
   useEffect(() => {
+    if (!data) return;
     const date = document.querySelector(".date"),
       daysContainer = document.querySelector(".days"),
       prev = document.querySelector(".prev"),
@@ -118,20 +122,15 @@ export default function Calendar() {
       let events = "";
       eventsArr.forEach((event) => {
         if (
-          date === event.day &&
-          month + 1 === event.month &&
-          year === event.year
+          date == event.day &&
+          month + 1 == event.month &&
+          year == event.year
         ) {
-          event.events.forEach((event) => {
-            events += `<div class="event">
+          events += `<div class="event">
             <div class="title">
               <h3 class="event-title">${event.title}</h3>
             </div>
-            <div class="event-time">
-              <span class="event-time">${event.time}</span>
-            </div>
         </div>`;
-          });
         }
       });
       if (events === "") {
@@ -256,88 +255,83 @@ export default function Calendar() {
     defineProperty();
 
     function getEvents() {
-      // TODO
-      const eventsArr = [
-        {
-          day: 13,
-          month: 11,
-          year: 2022,
-          events: [
-            {
-              title: "Event 1 lorem ipsun dolar sit genfa tersd dsad ",
-              time: "10:00 AM",
-            },
-          ],
-        },
-        {
-          day: 14,
-          month: 9,
-          year: 2023,
-          events: [
-            {
-              title: "Event 1 lorem ipsun dolar sit genfa tersd dsad ",
-              time: "10:00 AM",
-            },
-          ],
-        },
-      ];
-      return eventsArr;
+      let copy = [...data.invoices];
+      copy = copy
+        .filter((invoice) => invoice.status == "pending")
+        .map((invoice) => {
+          let yourDate = new Date(invoice.createdAt.seconds * 1000);
+          yourDate = yourDate.toISOString().split("T")[0];
+          let [year, month, day] = yourDate.split("-");
+
+          return {
+            day: day,
+            month: month,
+            year: year,
+            title: invoice.invoiceTitle,
+          };
+        });
+      return copy;
     }
-  }, []);
+  }, [data]);
 
   return (
-    <div className="container">
-      <div className="left">
-        <div className="calendar">
-          <div className="month">
-            <svg
-              className="rotate-180 prev"
-              width="15"
-              height="30"
-              viewBox="0 0 30 48"
-            >
-              <path
-                d="M5.99998 0L0.359985 5.64L18.68 24L0.359985 42.36L5.99998 48L30 24L5.99998 0Z"
-                fill="black"
-              />
-            </svg>
-            <div className="date" />
-            <svg className="next" width="15" height="30" viewBox="0 0 30 48">
-              <path
-                d="M5.99998 0L0.359985 5.64L18.68 24L0.359985 42.36L5.99998 48L30 24L5.99998 0Z"
-                fill="black"
-              />
-            </svg>
-          </div>
-          <div className="weekdays">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-          </div>
-          <div className="days" />
-          <div className="goto-today">
-            <div className="goto">
-              <input
-                type="text"
-                placeholder="mm/yyyy"
-                className="bg-white date-input"
-              />
-              <button className="goto-btn">Go</button>
+    <div>
+      <h2 className="pt-14 text-2xl px-7 underline underline-offset-2">
+        Search Pending Invoices By Date
+      </h2>
+      <div className="container">
+        <div className="left">
+          <div className="calendar">
+            <div className="month">
+              <svg
+                className="rotate-180 prev"
+                width="15"
+                height="30"
+                viewBox="0 0 30 48"
+              >
+                <path
+                  d="M5.99998 0L0.359985 5.64L18.68 24L0.359985 42.36L5.99998 48L30 24L5.99998 0Z"
+                  fill="black"
+                />
+              </svg>
+              <div className="date" />
+              <svg className="next" width="15" height="30" viewBox="0 0 30 48">
+                <path
+                  d="M5.99998 0L0.359985 5.64L18.68 24L0.359985 42.36L5.99998 48L30 24L5.99998 0Z"
+                  fill="black"
+                />
+              </svg>
             </div>
-            <button className="today-btn">Today</button>
+            <div className="weekdays">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
+            <div className="days" />
+            <div className="goto-today">
+              <div className="goto">
+                <input
+                  type="text"
+                  placeholder="mm/yyyy"
+                  className="bg-white date-input"
+                />
+                <button className="goto-btn">Go</button>
+              </div>
+              <button className="today-btn">Today</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="right">
-        <div className="today-date">
-          <div className="event-day">wed</div>
-          <div className="event-date">12th december 2022</div>
+        <div className="right">
+          <div className="today-date">
+            <div className="event-day">wed</div>
+            <div className="event-date">12th december 2022</div>
+          </div>
+          <div className="events"></div>
         </div>
-        <div className="events" />
       </div>
     </div>
   );
