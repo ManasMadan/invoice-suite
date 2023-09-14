@@ -62,7 +62,7 @@ const routes = [
     components: [<Navbar />, <NewInvoice />],
   },
   {
-    path: "/invoices/:uid",
+    path: "/invoices/view/:uid",
     components: [<Navbar />, <ViewInvoice />],
   },
   {

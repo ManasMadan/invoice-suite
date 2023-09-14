@@ -46,6 +46,7 @@ export default function ViewInvoice() {
     if (!data) return;
     const invoices = data.invoices;
     const invoice = invoices.filter((item) => item.uid === uid)[0];
+    if (!invoice) return;
     setInvoiceDetails(invoice);
     setSenderAddress(invoice.senderAddress);
     setClientsAddress(invoice.clientsAddress);

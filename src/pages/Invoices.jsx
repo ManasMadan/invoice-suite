@@ -127,7 +127,7 @@ export default function Invoices() {
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="See Invoice">
-              <Link to={`/invoices/${invoice.uid}`}>
+              <Link to={`/invoices/view/${invoice.uid}`}>
                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                   <EyeIcon />
                 </span>

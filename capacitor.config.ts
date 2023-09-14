@@ -2,7 +2,7 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "io.ionic.starter",
-  appName: "invoice-suite",
+  appName: "Invoice Suite",
   webDir: "dist",
   server: {
     androidScheme: "https",
