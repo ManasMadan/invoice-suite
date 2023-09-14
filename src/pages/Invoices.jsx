@@ -42,7 +42,6 @@ function getTableRowsHTML(items, currencySymbol) {
   let str = "";
   items.forEach((item) => {
     str = str.concat(itemStr(item, currencySymbol));
-    str = str.concat("<br>");
   });
   return str;
 }
@@ -64,7 +63,7 @@ function sendEmailToClient(invoice, currencySymbol) {
         senderCity: invoice.senderAddress.city,
         senderPostCode: invoice.senderAddress.postcode,
         senderCountry: invoice.senderAddress.country,
-        tableRowsHTML: getTableRowsHTML(invoice.items, "₹"),
+        tableRowsHTML: getTableRowsHTML(invoice.items, currencySymbol),
         currencySymbol: currencySymbol,
         createdAtDate: yourDate,
         from_name: `${invoice.senderName} ${invoice.senderEmail}`,
@@ -73,10 +72,10 @@ function sendEmailToClient(invoice, currencySymbol) {
     )
     .then(
       (result) => {
-        console.log(result.text);
+        alert(`Email Sent to ${invoice.clientEmail}`);
       },
       (error) => {
-        console.log(error.text);
+        console.error("Email Not Sent " + error);
       }
     );
 }
@@ -103,7 +102,7 @@ export default function Invoices() {
       return !prev;
     });
 
-  const renderCell = React.useCallback((invoice, columnKey) => {
+  const renderCell = React.useCallback((invoice, columnKey, currencySymbol) => {
     const cellValue = invoice[columnKey];
     let yourDate;
     if (columnKey == "createdAt") {
@@ -136,7 +135,7 @@ export default function Invoices() {
             </Tooltip>
             <Tooltip content="Mail Invoice">
               <span
-                onClick={() => sendEmailToClient(invoice, data.currencySymbol)}
+                onClick={() => sendEmailToClient(invoice, currencySymbol)}
                 className="h-5 text-lg text-default-400 cursor-pointer active:opacity-50"
               >
                 <IonIcon icon={mailOutline} />
@@ -201,7 +200,9 @@ export default function Invoices() {
           {(item) => (
             <TableRow key={`${Math.random()}`}>
               {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+                <TableCell>
+                  {renderCell(item, columnKey, data.currencySymbol || "₹")}
+                </TableCell>
               )}
             </TableRow>
           )}
