@@ -50,7 +50,7 @@ export default function ViewInvoice() {
     setInvoiceDetails(invoice);
     setSenderAddress(invoice.senderAddress);
     setClientsAddress(invoice.clientsAddress);
-    setItems(invoiceDetails.items);
+    setItems(invoice.items);
   }, [data]);
 
   return (
@@ -225,7 +225,7 @@ export default function ViewInvoice() {
         <Divider className="mt-1 mb-4" />
 
         <div className="flex flex-col gap-6">
-          {items &&
+          {items.length &&
             items.map((item, i) => (
               <div className="flex gap-8 items-center w-full" key={i}>
                 <span className="min-w-fit bg-[#27272a] flex items-center px-4 rounded-full aspect-square">
