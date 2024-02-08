@@ -743,7 +743,7 @@ export default function App() {
       </div>
       <div className="flex flex-col justify-center items-center pb-12">
         <div className="flex flex-col w-full">
-          <Card className="max-w-full w-[340px] h-[400px]">
+          <Card className="max-w-full w-[340px] h-[500px]">
             <CardBody className="overflow-hidden">
               <Tabs
                 fullWidth
@@ -816,8 +816,13 @@ export default function App() {
                         Login
                       </Button>
                     </div>
+                    <div className="text-[#72767f] text-center text-small">
+                      Use Credentials for Demo App Usage
+                      <p>Email : try@invoicesuite.com</p>
+                      <p>Password : abc@123</p>
+                    </div>
                     <div
-                      className="text-sm text-center text-[#72767f]"
+                      className="cursor-pointer text-[#2E6EE7] text-sm text-center"
                       onClick={onOpen}
                     >
                       Forgot Password
@@ -888,6 +893,11 @@ export default function App() {
                       >
                         Sign Up
                       </Button>
+                    </div>
+                    <div className="text-[#72767f] text-center text-small">
+                      Use Credentials for Demo App Usage
+                      <p>Email : try@invoicesuite.com</p>
+                      <p>Password : abc@123</p>
                     </div>
                   </form>
                 </Tab>
