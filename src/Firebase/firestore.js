@@ -8,13 +8,13 @@ const defaultData = {
   companyName: "Invoice Suite",
   currencySymbol: "₹",
   lastWeekMetric: [
-    { day: "Monday", amount: 1200 },
-    { day: "Tuesday", amount: 1800 },
-    { day: "Wednesday", amount: 1000 },
-    { day: "Thursday", amount: 1900 },
-    { day: "Friday", amount: 2200 },
-    { day: "Saturday", amount: 2300 },
-    { day: "Sunday", amount: 1500 },
+    { day: "Monday", amount: 0 },
+    { day: "Tuesday", amount: 0 },
+    { day: "Wednesday", amount: 0 },
+    { day: "Thursday", amount: 0 },
+    { day: "Friday", amount: 0 },
+    { day: "Saturday", amount: 0 },
+    { day: "Sunday", amount: 0 },
   ],
   totalAmountProcessed: 0,
 };
@@ -62,6 +62,7 @@ const updateCurrencySymbol = async (newName) => {
     console.error("Error adding document: ", e);
   }
 };
+
 const createInvoice = async (
   invoiceDetails,
   senderAddress,
@@ -86,6 +87,11 @@ const createInvoice = async (
     const docRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(docRef);
     const docData = docSnap.data();
+    const today = new Date().getDay() - 1;
+
+    docData.lastWeekMetric[today].amount =
+      docData.lastWeekMetric[today].amount + newInvoice.invoiceTotal;
+
     await updateDoc(docRef, {
       ...docData,
       totalAmountProcessed:
@@ -112,11 +118,17 @@ const updateInvoice = async (
     const docRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(docRef);
     const docData = docSnap.data();
+    const today = new Date().getDay() - 1;
+
     let i = 0;
     let invoice = docData.invoices.filter((item, index) => {
       if (item.uid === uid) i = index;
       return item.uid === uid;
     })[0];
+    docData.lastWeekMetric[today].amount =
+      docData.lastWeekMetric[today].amount -
+      invoice.invoiceTotal +
+      invoiceDetails.invoiceTotal;
     invoice = {
       ...invoiceDetails,
       clientsAddress: clientsAddress,
@@ -131,7 +143,6 @@ const updateInvoice = async (
     console.error("Something Went Wrong: ", e);
   }
 };
-
 const deleteInvoice = async (uid, refreshData) => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -142,6 +153,8 @@ const deleteInvoice = async (uid, refreshData) => {
     const docData = docSnap.data();
     const totalAmount = docData.totalAmountProcessed;
     let invoiceAmount = 0;
+    const today = new Date().getDay() - 1;
+
     const updatedData = { ...docData };
     updatedData.invoices = updatedData.invoices.filter((item) => {
       if (item.uid === uid) {
@@ -150,6 +163,8 @@ const deleteInvoice = async (uid, refreshData) => {
       return item.uid !== uid;
     });
 
+    updatedData.lastWeekMetric[today].amount =
+      updatedData.lastWeekMetric[today].amount - invoiceAmount;
     updatedData.totalAmountProcessed = totalAmount - invoiceAmount;
 
     await updateDoc(docRef, updatedData)
